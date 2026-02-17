@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+17b5f7da9a7eb33c9c583787d1750758 CMakeFiles/Skadoosh_autogen
+17b5f7da9a7eb33c9c583787d1750758 CMakeFiles/Skadoosh_autogen_timestamp_deps
+64d90a1086823b5b3969a080b38d0056 Skadoosh_autogen/timestamp
