@@ -2,14 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <vector> //
-#include <QString> //
+#include <vector> // ส่วนที่2
+#include <QString> //ส่วนที่1
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-// โครงสร้างข้อมูล (Struct)
+//  ส่วนที่2
 struct Task {
     QString name;
     int remainingMinutes;
@@ -19,47 +19,49 @@ struct Task {
     double stressIndex;
 };
 
-//
+//  ส่วนที่2
 struct Day {
-    QString timeSlots[1440]; // 1440 นาทีต่อวัน
+    QString timeSlots[1440];
     Day() {
         for(int i=0; i<1440; i++) timeSlots[i] = "Free";
     }
 };
 
+// ตรงนี้ไม่ต้อง
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+// นี้ก็ไม่ต้อง
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-//
+
+// ส่วนที่1
 private slots:
-    void on_btnUpdateTime_clicked();   // อัปเดตเวลาปัจจุบัน
-    void on_btnAddRoutine_clicked();   // เพิ่มกิจกรรมประจำ (Routine)
-    void on_btnAddTask_clicked();      // เพิ่มงาน (To-Do)
-    void on_btnCompleteTask_clicked(); // ลบงานที่เสร็จ
+    void on_btnUpdateTime_clicked();
+    void on_btnAddRoutine_clicked();
+    void on_btnAddTask_clicked();
+    void on_btnCompleteTask_clicked();
 
 private:
     Ui::MainWindow *ui;
 
-    // ตัวแปรเก็บข้อมูลหลัก
+    // ส่วนที่3
     std::vector<Day> week;
     std::vector<Task> taskList;
 
-    // ตัวแปรเวลาปัจจุบัน (ค่าเริ่มต้น: วันที่ 1 เวลา 08:00)
+    // ส่วนที่2
     int curDay = 1;
-    int curHour = 8;
+    int curHour = 0;
     int curMin = 0;
 
-    // ฟังก์ชันช่วยคำนวณและแสดงผล
-    int toMinutes(int h, int m);
-    int getNetFreeMinutes(int dDay, int dHour, int dMinute);
-    void updateDashboard();       // คำนวณ Stress Index และเรียกฟังก์ชันวาดตาราง
-    void refreshScheduleTable();  // วาดตารางตารางเรียน/กิจกรรม
-    void refreshToDoTable();      // วาดตาราง To-Do List
+    int toMinutes(int h, int m);  //ส่วนที่2
+    int getNetFreeMinutes(int dDay, int dHour, int dMinute); //ส่วนที่2
+    void updateDashboard(); //ส่วนที่1 ของเต้
+    void refreshScheduleTable(); //ส่วนที่3 ของเต้
+    void refreshToDoTable(); //ส่วนที่3 ของเต้
 };
 
 #endif // MAINWINDOW_H
