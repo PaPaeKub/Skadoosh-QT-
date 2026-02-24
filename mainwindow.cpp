@@ -1,4 +1,4 @@
-// ส่วนที่1 เคน
+// ส่วนที่2 เคน
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
@@ -28,7 +28,7 @@ int MainWindow::getNetFreeMinutes(int dDay, int dHour, int dMinute) {
     return freeCount;
 }
 
-// ส่วนที่2 เคน
+// ส่วนที่1 เคน
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
