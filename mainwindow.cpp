@@ -58,12 +58,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->timeCur->setTime(QTime(8, 0));
 }
 
-// ส่วนที่1 เต้
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+// ส่วนที่1 เต้
 void MainWindow::on_btnUpdateTime_clicked()
 {
     curDay = ui->spinCurDay->value();
