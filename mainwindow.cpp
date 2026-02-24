@@ -1,4 +1,4 @@
-// ส่วนที่2 เคน
+// ส่วนที่1 เคน
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
@@ -6,6 +6,7 @@
 #include <QTableWidgetItem>
 #include <QCheckBox>
 
+// ส่วนที่2 เคน
 int MainWindow::toMinutes(int h, int m) {
     return (h * 60) + m;
 }
