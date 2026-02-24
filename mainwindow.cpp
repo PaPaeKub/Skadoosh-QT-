@@ -1,3 +1,4 @@
+// ส่วนที่1 เคน
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
@@ -27,17 +28,15 @@ int MainWindow::getNetFreeMinutes(int dDay, int dHour, int dMinute) {
     return freeCount;
 }
 
-// --- Constructor & Destructor ---
+// ส่วนที่2 เคน
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    // 1. เตรียมข้อมูล 7 วัน
     week.resize(7);
 
-    // 2. ตั้งค่าตาราง Schedule (24 ชม. x 7 วัน)
     ui->tableSchedule->setRowCount(24);
     ui->tableSchedule->setColumnCount(7);
     QStringList headers;
@@ -48,38 +47,34 @@ MainWindow::MainWindow(QWidget *parent)
         ui->tableSchedule->setVerticalHeaderItem(i, new QTableWidgetItem(timeLabel));
     }
 
-    // 3. ตั้งค่าตาราง To-Do List (5 คอลัมน์)
     ui->tableToDo->setColumnCount(5);
     QStringList todoHeaders;
     todoHeaders << "ชื่องาน" << "Deadline" << "เวลาว่างเหลือ (ชม.)" << "เวลาต้องใช้ (ชม.)" << "สถานะ";
     ui->tableToDo->setHorizontalHeaderLabels(todoHeaders);
-    // ปรับความกว้างคอลัมน์ให้สวยงาม
     ui->tableToDo->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    // ตั้งค่าเริ่มต้น UI
     ui->spinCurDay->setValue(1);
     ui->timeCur->setTime(QTime(8, 0));
 }
 
+// ส่วนที่1 เต้
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
-// --- Button Slots ---
-
 void MainWindow::on_btnUpdateTime_clicked()
 {
-    // อัปเดตเวลาปัจจุบันเข้าระบบ
     curDay = ui->spinCurDay->value();
     QTime t = ui->timeCur->time();
     curHour = t.hour();
     curMin = t.minute();
 
-    updateDashboard(); // คำนวณใหม่ทันที
+    updateDashboard();
     QMessageBox::information(this, "อัปเดต", "อัปเดตเวลาและคำนวณสถานะงานใหม่เรียบร้อย!");
 }
 
+// ส่วนที่3 เคน
 void MainWindow::on_btnAddRoutine_clicked()
 {
     QString name = ui->inputRoutineName->text();
@@ -91,28 +86,25 @@ void MainWindow::on_btnAddRoutine_clicked()
     int startM = toMinutes(tStart.hour(), tStart.minute());
     int endM = toMinutes(tEnd.hour(), tEnd.minute());
 
-    // รวม CheckBox เป็น Array เพื่อวนลูปเช็ค
     QCheckBox* days[] = {ui->cbMon, ui->cbTue, ui->cbWed, ui->cbThu, ui->cbFri, ui->cbSat, ui->cbSun};
 
     for(int i=0; i<7; i++) {
         if(days[i]->isChecked()) {
-            // ลงเวลาใน Memory (ข้ามวันตัดจบที่ 23:59 เพื่อความง่ายใน GUI v1)
             if(endM > startM) {
                 for(int m = startM; m < endM; m++) week[i].timeSlots[m] = name;
             } else {
-                // กรณีข้ามวัน (เช่น 22:00 - 06:00)
                 for(int m = startM; m < 1440; m++) week[i].timeSlots[m] = name;
                 for(int m = 0; m < endM; m++) week[i].timeSlots[m] = name;
             }
         }
     }
-
+    
     updateDashboard();
     ui->inputRoutineName->clear();
-    // Reset CheckBox (Optional)
     for(int i=0; i<7; i++) days[i]->setChecked(false);
 }
 
+// ส่วนที่2 เต้
 void MainWindow::on_btnAddTask_clicked()
 {
     QString name = ui->inputTaskName->text();
@@ -124,7 +116,6 @@ void MainWindow::on_btnAddTask_clicked()
         QMessageBox::warning(this, "เตือน", "กรุณาใส่ชื่องาน!");
         return;
     }
-
     Task t;
     t.name = name;
     t.remainingMinutes = (int)(hours * 60);
@@ -141,14 +132,13 @@ void MainWindow::on_btnAddTask_clicked()
     ui->spinTaskHours->setValue(1.0);
 }
 
+// ส่วนที่4 เคน
 void MainWindow::on_btnCompleteTask_clicked()
 {
-    // หาแถวที่ถูกเลือกในตาราง To-Do
     int row = ui->tableToDo->currentRow();
     if(row >= 0 && row < taskList.size()) {
         QString taskName = ui->tableToDo->item(row, 0)->text();
 
-        // ลบออกจาก Vector
         taskList.erase(taskList.begin() + row);
 
         updateDashboard();
@@ -158,29 +148,27 @@ void MainWindow::on_btnCompleteTask_clicked()
     }
 }
 
-// --- Display Logic ---
+// ส่วนที่3 เต้
 
 void MainWindow::updateDashboard() {
-    // 1. คำนวณ Stress Index
     for (auto& t : taskList) {
         int free = getNetFreeMinutes(t.deadlineDay, t.deadlineHour, t.deadlineMinute);
         t.stressIndex = (free <= 0) ? 999.0 : (double)t.remainingMinutes / free;
     }
-
-    // 2. เรียงลำดับงานตามความด่วน
+    
     std::sort(taskList.begin(), taskList.end(), [](const Task& a, const Task& b) {
         return a.stressIndex > b.stressIndex;
     });
 
-    // 3. วาดตารางใหม่
     refreshScheduleTable();
     refreshToDoTable();
 }
 
+// ส่วนที่5 เคน
+
 void MainWindow::refreshScheduleTable() {
     for(int h=0; h<24; h++) {
         for(int d=0; d<7; d++) {
-            // เช็คนาทีที่ 30 ของชั่วโมงนั้นว่าทำอะไรอยู่ (สุ่มเช็ค)
             int checkMin = (h * 60) + 30;
             QString status = week[d].timeSlots[checkMin];
 
@@ -192,24 +180,23 @@ void MainWindow::refreshScheduleTable() {
                 item->setBackground(Qt::white);
             } else {
                 item->setText(status);
-                // สุ่มสีพื้นหลังตามชื่อกิจกรรม (ง่ายๆ)
                 if(status.contains("นอน") || status.contains("Sleep")) item->setBackground(QColor(200, 200, 200));
                 else if(status.contains("เรียน") || status.contains("Study")) item->setBackground(QColor(173, 216, 230));
-                else item->setBackground(QColor(255, 228, 196)); // สีครีมสำหรับธุระอื่นๆ
+                else item->setBackground(QColor(255, 228, 196));
             }
             ui->tableSchedule->setItem(h, d, item);
         }
     }
 }
 
+// ส่วนที่6 เคน
 void MainWindow::refreshToDoTable() {
-    ui->tableToDo->setRowCount(0); // ล้างตารางเก่า
+    ui->tableToDo->setRowCount(0);
 
     for(const auto& t : taskList) {
         int row = ui->tableToDo->rowCount();
         ui->tableToDo->insertRow(row);
 
-        // คำนวณค่าเพื่อแสดงผล
         double freeHrs = getNetFreeMinutes(t.deadlineDay, t.deadlineHour, t.deadlineMinute) / 60.0;
         double needHrs = t.remainingMinutes / 60.0;
 
@@ -219,12 +206,11 @@ void MainWindow::refreshToDoTable() {
         QString statusStr;
         QColor statusColor;
 
-        if (t.stressIndex > 1.0) { statusStr = "CRITICAL"; statusColor = QColor(255, 100, 100); } // แดงเข้ม
-        else if (t.stressIndex > 0.7) { statusStr = "Urgent"; statusColor = QColor(255, 160, 122); } // ส้มแดง
-        else if (t.stressIndex > 0.4) { statusStr = "Warning"; statusColor = QColor(255, 255, 153); } // เหลือง
+        if (t.stressIndex > 1.0) { statusStr = "CRITICAL"; statusColor = QColor(255, 100, 100); }
+        else if (t.stressIndex > 0.7) { statusStr = "Urgent"; statusColor = QColor(255, 160, 122); }
+        else if (t.stressIndex > 0.4) { statusStr = "Warning"; statusColor = QColor(255, 255, 153); }
         else { statusStr = "Chill"; statusColor = QColor(144, 238, 144); } // เขียว
 
-        // ใส่ข้อมูลลง 5 คอลัมน์
         ui->tableToDo->setItem(row, 0, new QTableWidgetItem(t.name));
         ui->tableToDo->setItem(row, 1, new QTableWidgetItem(deadlineStr));
         ui->tableToDo->setItem(row, 2, new QTableWidgetItem(QString::number(freeHrs, 'f', 1)));
