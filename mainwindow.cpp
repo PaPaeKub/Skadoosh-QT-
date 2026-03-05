@@ -1,4 +1,3 @@
-// ส่วนที่1 เคน
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
@@ -6,7 +5,6 @@
 #include <QTableWidgetItem>
 #include <QCheckBox>
 
-// ส่วนที่2 เคน
 int MainWindow::toMinutes(int h, int m) {
     return (h * 60) + m;
 }
@@ -29,7 +27,6 @@ int MainWindow::getNetFreeMinutes(int dDay, int dHour, int dMinute) {
     return freeCount;
 }
 
-// ส่วนที่1 เคน
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -63,7 +60,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-// ส่วนที่1 เต้
 void MainWindow::on_btnUpdateTime_clicked()
 {
     curDay = ui->spinCurDay->value();
@@ -75,7 +71,6 @@ void MainWindow::on_btnUpdateTime_clicked()
     QMessageBox::information(this, "อัปเดต", "อัปเดตเวลาและคำนวณสถานะงานใหม่เรียบร้อย!");
 }
 
-// ส่วนที่3 เคน
 void MainWindow::on_btnAddRoutine_clicked()
 {
     QString name = ui->inputRoutineName->text();
@@ -105,7 +100,6 @@ void MainWindow::on_btnAddRoutine_clicked()
     for(int i=0; i<7; i++) days[i]->setChecked(false);
 }
 
-// ส่วนที่2 เต้
 void MainWindow::on_btnAddTask_clicked()
 {
     QString name = ui->inputTaskName->text();
@@ -133,7 +127,6 @@ void MainWindow::on_btnAddTask_clicked()
     ui->spinTaskHours->setValue(1.0);
 }
 
-// ส่วนที่4 เคน
 void MainWindow::on_btnCompleteTask_clicked()
 {
     int row = ui->tableToDo->currentRow();
@@ -149,8 +142,6 @@ void MainWindow::on_btnCompleteTask_clicked()
     }
 }
 
-// ส่วนที่3 เต้
-
 void MainWindow::updateDashboard() {
     for (auto& t : taskList) {
         int free = getNetFreeMinutes(t.deadlineDay, t.deadlineHour, t.deadlineMinute);
@@ -164,8 +155,6 @@ void MainWindow::updateDashboard() {
     refreshScheduleTable();
     refreshToDoTable();
 }
-
-// ส่วนที่5 เคน
 
 void MainWindow::refreshScheduleTable() {
     for(int h=0; h<24; h++) {
@@ -190,7 +179,6 @@ void MainWindow::refreshScheduleTable() {
     }
 }
 
-// ส่วนที่6 เคน
 void MainWindow::refreshToDoTable() {
     ui->tableToDo->setRowCount(0);
 
